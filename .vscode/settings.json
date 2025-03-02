@@ -1,0 +1,5 @@
+{
+    "java.project.referencedLibraries": [
+        "junit-platform-console-standalone-1.8.2.jar"
+    ]
+}
