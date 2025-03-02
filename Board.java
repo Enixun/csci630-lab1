@@ -1,17 +1,30 @@
 public class Board {
+  private static final int DEFAULT_BOARD_SIZE = 6;
   private static final char AVAILABLE = '.';
   private static final char OBSTACLE = '*';
-  
+
   private int size;
   private char[][] board;
   
   public Board() {
-    this(6);
+    this(Board.DEFAULT_BOARD_SIZE);
   }
 
   public Board(int size) {
     this.size = size;
     this.board = new char[size][size];
+    this.init();
+  }
+
+  public Board(BoardPosition... obstacles) {
+    this(DEFAULT_BOARD_SIZE, obstacles);
+  }
+
+  public Board(int size, BoardPosition... obstacles) {
+    this(size);
+    for (BoardPosition bp : obstacles) {
+      addObstacle(bp);
+    }
   }
 
   public void init() {
@@ -22,7 +35,7 @@ public class Board {
     }
   }
 
-  public void addObstacle(BoardPosition ...positions) {
+  public void addObstacle(BoardPosition... positions) {
     for (BoardPosition bp : positions) {
       board[bp.row()][bp.col()] = Board.OBSTACLE;
     }
@@ -45,8 +58,7 @@ public class Board {
   }
 
   public static void main(String[] args) {
-    Board b = new Board();
-    b.init();
+    Board b = new Board(new BoardPosition(5, 2), new BoardPosition(5, 4));
     b.addObstacle(new BoardPosition(2, 3));
     System.out.println(b.toString());
   }
