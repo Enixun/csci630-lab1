@@ -13,6 +13,14 @@ public class Player {
     pieces.add(new Piece(2, 3));
   }
 
+  public char getId() {
+    return id;
+  }
+
+  public Set<Piece> getPieces() {
+    return pieces;
+  }
+
   @Override
   public String toString() {
     return "Player(" +

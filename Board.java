@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Board {
   private static final int DEFAULT_BOARD_SIZE = 6;
   private static final char AVAILABLE = '.';
@@ -36,9 +38,21 @@ public class Board {
   }
 
   public void addObstacle(BoardPosition... positions) {
+    updateBoard(OBSTACLE, positions);
+  }
+
+  public void updateBoard(char symbol, BoardPosition... positions) {
     for (BoardPosition bp : positions) {
-      board[bp.row()][bp.col()] = Board.OBSTACLE;
+      if (board[bp.row()][bp.col()] == AVAILABLE) board[bp.row()][bp.col()] = symbol;
     }
+  }
+
+  public Board copy() {
+    Board copy = new Board(size);
+    for (int i = 0; i < size; i++) {
+      copy.board[i] = board[i];
+    }
+    return copy;
   }
 
   @Override

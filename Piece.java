@@ -1,3 +1,5 @@
+// import java.util.Arrays;
+
 public class Piece {
   private int length;
   private int width;
@@ -5,6 +7,18 @@ public class Piece {
   public Piece(int length, int width) {
     this.length = length < width ? length : width;
     this.width = this.length == length ? width : length;
+  }
+
+  public BoardPosition[] coordinates(BoardPosition start) {
+    BoardPosition[] c = new BoardPosition[length * width];
+    int ci = 0;
+    for (int i = 0; i < length; i++) {
+      for (int j = 0; j < width; j++) {
+        c[ci++] = start.add(i, j);
+        // System.out.println(Arrays.toString(c));
+      }
+    }
+    return c;
   }
 
   @Override

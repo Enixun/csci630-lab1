@@ -15,6 +15,14 @@ public class BoardPosition {
     return this.col;
   }
 
+  public BoardPosition add(int row, int col) {
+    return new BoardPosition(this.row + row, this.col + col);
+  }
+
+  public BoardPosition add(BoardPosition bp) {
+    return new BoardPosition(this.row + bp.row, this.col + bp.col);
+  }
+
   @Override
   public String toString() {
     return row + "," + col;
