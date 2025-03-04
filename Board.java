@@ -50,7 +50,7 @@ public class Board {
   public Board copy() {
     Board copy = new Board(size);
     for (int i = 0; i < size; i++) {
-      copy.board[i] = board[i];
+      copy.board[i] = Arrays.copyOf(board[i], board[i].length);
     }
     return copy;
   }

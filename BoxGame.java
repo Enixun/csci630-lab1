@@ -40,7 +40,7 @@ public class BoxGame {
   public void move(Board board, int mover, BoardPosition bp) {
     Player p = players[mover - 1];
     for (Piece piece : p.getPieces()) {
-      Board update = board;
+      Board update = board.copy();
       update.updateBoard(p.getId(), piece.coordinates(bp));
       System.out.println(update);
     }
