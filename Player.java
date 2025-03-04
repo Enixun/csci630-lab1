@@ -2,6 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Player {
+  private static final Piece DEFAULT_PIECE = new Piece(2, 3);
   private char id;
   private Strategy strategy;
   private Set<Piece> pieces;
@@ -10,7 +11,7 @@ public class Player {
     this.id = id;
     this.strategy = strategy;
     this.pieces = new HashSet<>();
-    pieces.add(new Piece(2, 3));
+    pieces.add(DEFAULT_PIECE);
   }
 
   public char getId() {

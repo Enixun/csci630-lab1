@@ -14,6 +14,7 @@ public class Piece {
     int ci = 0;
     for (int i = 0; i < length; i++) {
       for (int j = 0; j < width; j++) {
+        // c[i * length + i + j] = start.add(i, j);
         c[ci++] = start.add(i, j);
         // System.out.println(Arrays.toString(c));
       }

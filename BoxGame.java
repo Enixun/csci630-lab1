@@ -61,6 +61,6 @@ public class BoxGame {
       new BoardPosition(2, 3)
     ));
     System.out.println(bg);
-    bg.move(bg.getBoard(), 1, new BoardPosition(1, 0));
+    bg.move(bg.getBoard(), 1, new BoardPosition(0, 0));
   }
 }
