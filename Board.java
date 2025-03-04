@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Board {
   private static final int DEFAULT_BOARD_SIZE = 6;
@@ -18,11 +19,11 @@ public class Board {
     this.init();
   }
 
-  public Board(BoardPosition... obstacles) {
+  public Board(BoardPosition... obstacles) throws InvalidBoardException {
     this(DEFAULT_BOARD_SIZE, obstacles);
   }
 
-  public Board(int size, BoardPosition... obstacles) {
+  public Board(int size, BoardPosition... obstacles) throws InvalidBoardException {
     this(size);
     for (BoardPosition bp : obstacles) {
       addObstacle(bp);
@@ -37,13 +38,21 @@ public class Board {
     }
   }
 
-  public void addObstacle(BoardPosition... positions) {
+  public void addObstacle(BoardPosition... positions) throws InvalidBoardException {
     updateBoard(OBSTACLE, positions);
   }
 
-  public void updateBoard(char symbol, BoardPosition... positions) {
+  public void updateBoard(char symbol, BoardPosition... positions) throws InvalidBoardException {
     for (BoardPosition bp : positions) {
-      if (board[bp.row()][bp.col()] == AVAILABLE) board[bp.row()][bp.col()] = symbol;
+      int row = bp.row();
+      int col = bp.col();
+      if (row < 0 || row >= size || col < 0 || col >= size) 
+        throw new InvalidBoardException("Piece out of bounds.");
+      if (board[bp.row()][bp.col()] != AVAILABLE) 
+        throw new InvalidBoardException("Cannot update unavailable slot.");
+    }
+    for (BoardPosition bp : positions) {
+      board[bp.row()][bp.col()] = symbol;
     }
   }
 
@@ -71,9 +80,38 @@ public class Board {
     return sb.toString();
   }
 
-  public static void main(String[] args) {
-    Board b = new Board(new BoardPosition(5, 2), new BoardPosition(5, 4));
-    b.addObstacle(new BoardPosition(2, 3));
-    System.out.println(b.toString());
+  public ArrayList<BoardPosition> available() {
+    ArrayList<BoardPosition> available = new ArrayList<>();
+    for (int r = 0; r < size; r++) {
+      for (int c = 0; c < size; c++) {
+        if (board[r][c] == AVAILABLE) available.add(new BoardPosition(r, c));
+      }
+    }
+    return available;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof Board) {
+      Board b = (Board) obj;
+      if (b.size != this.size) return false;
+      for (int r = 0; r < size; r++) {
+        for (int c = 0; c < size; c++) {
+          if (b.board[r][c] != this.board[r][c])
+            return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public static void main(String[] args) throws InvalidBoardException {
+    Board b1 = new Board(new BoardPosition(5, 2), new BoardPosition(5, 4));
+    b1.addObstacle(new BoardPosition(2, 3));
+    System.out.println(b1.toString());
+    Board b2 = new Board(new BoardPosition(5, 2), new BoardPosition(5, 4));
+    b2.addObstacle(new BoardPosition(2, 3));
+    System.out.println(b1.equals(b2));
   }
 }

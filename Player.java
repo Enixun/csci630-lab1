@@ -18,6 +18,10 @@ public class Player {
     return id;
   }
 
+  public void setStrategy(Strategy s) {
+    this.strategy = s;
+  }
+
   public Set<Piece> getPieces() {
     return pieces;
   }

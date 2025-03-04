@@ -37,14 +37,41 @@ public class BoxGame {
     return board;
   }
 
-  public void move(Board board, int mover, BoardPosition bp) {
-    Player p = players[mover - 1];
-    for (Piece piece : p.getPieces()) {
-      Board update = board.copy();
-      update.updateBoard(p.getId(), piece.coordinates(bp));
-      System.out.println(update);
-    }
+  public int evaluate(Board board, int mover) {
+    return minimax(board, mover - 1, players[mover - 1], Integer.MAX_VALUE);
   }
+
+  private int minimax(Board board, int turnIndex, Player max, int depth) {
+    Player p = players[turnIndex];
+    boolean isMax = p.equals(max);
+    int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+    boolean terminal = true;
+    if (depth > 0) {
+      for (BoardPosition bp : board.available()) {
+        for (Piece piece : p.getPieces()) {
+          Board update = board.copy();
+          try {
+            update.updateBoard(p.getId(), piece.coordinates(bp));
+            int curVal = minimax(update, (turnIndex + 1) % players.length, max, depth - 1);
+            if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
+            terminal = false;
+          } catch (InvalidBoardException ibe) {
+            // System.err.println("Cannot place piece at " + bp + ", " + ibe.getMessage());
+          }
+        }
+      }
+    }
+    return terminal ? -1 : val;
+  }
+
+  // public void move(Board board, int mover) {
+  //   Player p = players[mover - 1];
+  //   for (Piece piece : p.getPieces()) {
+  //     Board update = board.copy();
+  //     update.updateBoard(p.getId(), piece.coordinates(bp));
+  //     System.out.println(update);
+  //   }
+  // }
 
   @Override
   public String toString() {
@@ -55,12 +82,12 @@ public class BoxGame {
     "}";
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InvalidBoardException {
     BoxGame bg = new BoxGame(2, new Board(
       new BoardPosition(5, 2), new BoardPosition(5, 4),
       new BoardPosition(2, 3)
     ));
     System.out.println(bg);
-    bg.move(bg.getBoard(), 1, new BoardPosition(0, 0));
+    bg.evaluate(bg.getBoard(), 1);
   }
 }
