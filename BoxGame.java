@@ -1,4 +1,7 @@
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Queue;
 
 public class BoxGame {
   private static final int DEFAULT_PLAYER_COUNT = 2;
@@ -53,6 +56,7 @@ public class BoxGame {
           try {
             update.updateBoard(p.getId(), piece.coordinates(bp));
             int curVal = minimax(update, (turnIndex + 1) % players.length, max, depth - 1);
+            // System.out.println("Best so far: " + val + ", current: " + curVal);
             if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
             terminal = false;
           } catch (InvalidBoardException ibe) {
@@ -61,7 +65,58 @@ public class BoxGame {
         }
       }
     }
-    return terminal ? -1 : val;
+    return terminal ? finalScore(board, p) : val;
+  }
+
+  private int finalScore(Board board, Player p) {
+    int playerScore = 0;
+    int opponentScore = 0;
+    HashSet<BoardPosition> visited = new HashSet<>();
+    // System.out.println(board);
+
+    for (int r = 0; r < board.getSize(); r++) {
+      for (int c = 0; c < board.getSize(); c++) {
+        BoardPosition bp = new BoardPosition(r, c);
+        if (visited.contains(bp)) continue;
+        char val = board.lookup(bp);
+        if (val != Board.AVAILABLE && val != Board.OBSTACLE) {
+          Queue<BoardPosition> bfs = new LinkedList<>();
+          bfs.add(bp);
+          int count = 0;
+
+          while (!bfs.isEmpty()) {
+            BoardPosition sp = bfs.remove();
+            if (visited.contains(sp) || board.lookup(sp) != val) continue;
+            visited.add(sp);
+            count += 1;
+            BoardPosition up = sp.add(-1, 0);
+            BoardPosition down = sp.add(1, 0);
+            BoardPosition left = sp.add(0, -1);
+            BoardPosition right = sp.add(0, 1);
+            if (sp.row() > 0 && !visited.contains(up)) {
+              bfs.add(up);
+            }
+            if (sp.row() < board.getSize() - 1 && !visited.contains(down)) {
+              bfs.add(down);
+            }
+            if (sp.col() > 0 && !visited.contains(left)) {
+              bfs.add(left);
+            }
+            if (sp.col() < board.getSize() - 1 && !visited.contains(right)) {
+              bfs.add(right);
+            }
+          }
+
+          // System.out.println(val + " " + count);
+          if (val == p.getId()) playerScore += (count / 6) - 1;
+          else opponentScore += (count / 6) - 1;
+        }
+        visited.add(bp);
+      }
+    }
+
+    // System.out.println(playerScore + ", " + opponentScore);
+    return playerScore - opponentScore;
   }
 
   // public void move(Board board, int mover) {
@@ -88,6 +143,6 @@ public class BoxGame {
       new BoardPosition(2, 3)
     ));
     System.out.println(bg);
-    bg.evaluate(bg.getBoard(), 1);
+    System.out.println(bg.evaluate(bg.getBoard(), 1));
   }
 }

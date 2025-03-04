@@ -24,7 +24,27 @@ public class BoardPosition {
   }
 
   @Override
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof BoardPosition) {
+      BoardPosition bp = (BoardPosition) o;
+      return bp.row == this.row && bp.col == this.col;
+    }
+    return false;
+  }
+
+  @Override
   public String toString() {
     return row + "," + col;
+  }
+
+  public static void main(String[] args) {
+    BoardPosition bp1 = new BoardPosition(0, 0);
+    BoardPosition bp2 = new BoardPosition(0, 0);
+
   }
 }

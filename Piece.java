@@ -5,8 +5,14 @@ public class Piece {
   private int width;
   
   public Piece(int length, int width) {
-    this.length = length < width ? length : width;
-    this.width = this.length == length ? width : length;
+    // this.length = length < width ? length : width;
+    // this.width = this.length == length ? width : length;
+    this.length = length;
+    this.width = width;
+  }
+
+  public Piece flip() {
+    return new Piece(width, length);
   }
 
   public BoardPosition[] coordinates(BoardPosition start) {

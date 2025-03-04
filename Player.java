@@ -12,6 +12,7 @@ public class Player {
     this.strategy = strategy;
     this.pieces = new HashSet<>();
     pieces.add(DEFAULT_PIECE);
+    pieces.add(DEFAULT_PIECE.flip());
   }
 
   public char getId() {

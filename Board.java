@@ -3,8 +3,8 @@ import java.util.ArrayList;
 
 public class Board {
   private static final int DEFAULT_BOARD_SIZE = 6;
-  private static final char AVAILABLE = '.';
-  private static final char OBSTACLE = '*';
+  public static final char AVAILABLE = '.';
+  public static final char OBSTACLE = '*';
 
   private int size;
   private char[][] board;
@@ -28,6 +28,14 @@ public class Board {
     for (BoardPosition bp : obstacles) {
       addObstacle(bp);
     }
+  }
+
+  public int getSize() {
+    return size;
+  }
+
+  public char lookup(BoardPosition p) {
+    return board[p.row()][p.col()];
   }
 
   public void init() {
