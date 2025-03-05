@@ -80,12 +80,15 @@ public class BoxGame {
         if (visited.contains(bp)) continue;
         char val = board.lookup(bp);
         if (val != Board.AVAILABLE && val != Board.OBSTACLE) {
-          Queue<BoardPosition> bfs = new LinkedList<>();
-          bfs.add(bp);
+          Queue<BoardPosition> q = new LinkedList<>();
+          HashSet<BoardPosition> inQ = new HashSet<>();
+          q.add(bp);
+          inQ.add(bp);
           int count = 0;
 
-          while (!bfs.isEmpty()) {
-            BoardPosition sp = bfs.remove();
+          while (!q.isEmpty()) {
+            System.out.println(q);
+            BoardPosition sp = q.remove();
             if (visited.contains(sp) || board.lookup(sp) != val) continue;
             visited.add(sp);
             count += 1;
@@ -93,17 +96,21 @@ public class BoxGame {
             BoardPosition down = sp.add(1, 0);
             BoardPosition left = sp.add(0, -1);
             BoardPosition right = sp.add(0, 1);
-            if (sp.row() > 0 && !visited.contains(up)) {
-              bfs.add(up);
+            if (sp.row() > 0 && !visited.contains(up) && !inQ.contains(up)) {
+              q.add(up);
+              inQ.add(up);
             }
-            if (sp.row() < board.getSize() - 1 && !visited.contains(down)) {
-              bfs.add(down);
+            if (sp.row() < board.getSize() - 1 && !visited.contains(down) && !inQ.contains(down)) {
+              q.add(down);
+              inQ.add(down);
             }
-            if (sp.col() > 0 && !visited.contains(left)) {
-              bfs.add(left);
+            if (sp.col() > 0 && !visited.contains(left) && !inQ.contains(left)) {
+              q.add(left);
+              inQ.add(left);
             }
-            if (sp.col() < board.getSize() - 1 && !visited.contains(right)) {
-              bfs.add(right);
+            if (sp.col() < board.getSize() - 1 && !visited.contains(right) && !inQ.contains(right)) {
+              q.add(right);
+              inQ.add(right);
             }
           }
 
@@ -144,5 +151,6 @@ public class BoxGame {
     ));
     System.out.println(bg);
     System.out.println(bg.evaluate(bg.getBoard(), 1));
+    System.out.println(bg.evaluate(bg.getBoard(), 2));
   }
 }

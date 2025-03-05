@@ -45,6 +45,8 @@ public class BoardPosition {
   public static void main(String[] args) {
     BoardPosition bp1 = new BoardPosition(0, 0);
     BoardPosition bp2 = new BoardPosition(0, 0);
-
+    System.out.println(bp1);
+    System.out.println(bp2);
+    System.out.println(bp1.hashCode() == bp2.hashCode());
   }
 }
