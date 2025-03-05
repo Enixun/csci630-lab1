@@ -138,14 +138,21 @@ public class BoxGame {
     return playerScore - opponentScore;
   }
 
-  // public void move(Board board, int mover) {
-  //   Player p = players[mover - 1];
-  //   for (Piece piece : p.getPieces()) {
-  //     Board update = board.copy();
-  //     update.updateBoard(p.getId(), piece.coordinates(bp));
-  //     System.out.println(update);
-  //   }
-  // }
+  public Board move(Board board, int mover) throws InvalidBoardException {
+    Player p = players[mover - 1];
+    Board bestBoard = null;
+    int bestScore = Integer.MIN_VALUE;
+    for (Board update : possibleMoves(board, p)) {
+      // System.out.println("Update\n" + update);
+      int curScore = minimax(update, mover - 1, p, Integer.MAX_VALUE);
+      if (curScore > bestScore) {
+        bestBoard = update;
+        bestScore = curScore;
+      }
+    }
+    if (bestBoard == null) throw new InvalidBoardException("No possible moves");
+    return bestBoard;
+  }
 
   @Override
   public String toString() {
@@ -162,7 +169,12 @@ public class BoxGame {
       new BoardPosition(2, 3)
     ));
     System.out.println(bg);
-    System.out.println(bg.evaluate(bg.getBoard(), 1));
-    System.out.println(bg.evaluate(bg.getBoard(), 2));
+    // System.out.println(bg.evaluate(bg.getBoard(), 1));
+    bg.board = bg.move(bg.board, 1);
+    System.out.println(bg.board);
+    // System.out.println(bg.evaluate(bg.getBoard(), 2));
+    bg.board = bg.move(bg.board, 2);
+    System.out.println(bg.board);
+    // System.out.println(bg.move(bg.board, 2));
   }
 }
