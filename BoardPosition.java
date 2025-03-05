@@ -16,7 +16,7 @@ public class BoardPosition {
   }
 
   public BoardPosition add(int row, int col) {
-    return new BoardPosition(this.row + row, this.col + col);
+    return this.add(new BoardPosition(row, col));
   }
 
   public BoardPosition add(BoardPosition bp) {
