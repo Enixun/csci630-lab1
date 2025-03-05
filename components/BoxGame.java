@@ -66,11 +66,12 @@ public class BoxGame {
   private int minimax(Board board, int turnIndex, Player max, int depth) {
     Player p = players[turnIndex];
     boolean isMax = p.equals(max);
+    System.out.println(p + " = " + max + " = " + isMax);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
     boolean terminal = true;
     if (depth > 0) {
       for (Board update : possibleMoves(board, p)) {
-        // System.out.println(update);
+        System.out.println(update);
           terminal = false;
           int curVal = minimax(update, (turnIndex + 1) % players.length, max, depth - 1);
           // System.out.println("Best so far: " + val + ", current: " + curVal);
@@ -78,6 +79,9 @@ public class BoxGame {
           terminal = false;
       }
     }
+    // System.out.println(p);
+    if (terminal) val = finalScore(board, p);
+    System.out.println("minimax: " + p + " max: " + max + " best val: " + val);
     return terminal ? finalScore(board, p) : val;
   }
 
@@ -140,7 +144,9 @@ public class BoxGame {
   }
 
   public Board move(Board board, int mover) throws InvalidBoardException {
-    Player p = players[mover - 1];
+    int turnIndex = mover - 1;
+    Player p = players[turnIndex];
+    System.out.println(p);
     Board bestBoard = null;
     int bestScore = Integer.MIN_VALUE;
     for (Board update : possibleMoves(board, p)) {
@@ -171,9 +177,19 @@ public class BoxGame {
     ));
     System.out.println(bg);
     // System.out.println(bg.evaluate(bg.getBoard(), 1));
+    System.out.println("TURN 1");
     bg.board = bg.move(bg.board, 1);
     System.out.println(bg.board);
     // System.out.println(bg.evaluate(bg.getBoard(), 2));
+    System.out.println("TURN 2");
+    bg.board = bg.move(bg.board, 2);
+    System.out.println(bg.board);
+    // System.out.println(bg.move(bg.board, 2));
+    System.out.println("TURN 1");
+    bg.board = bg.move(bg.board, 1);
+    System.out.println(bg.board);
+    // System.out.println(bg.evaluate(bg.getBoard(), 2));
+    System.out.println("TURN 2");
     bg.board = bg.move(bg.board, 2);
     System.out.println(bg.board);
     // System.out.println(bg.move(bg.board, 2));
