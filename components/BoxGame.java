@@ -1,3 +1,4 @@
+package components;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -84,7 +85,7 @@ public class BoxGame {
     int playerScore = 0;
     int opponentScore = 0;
     HashSet<BoardPosition> visited = new HashSet<>();
-    // System.out.println(board);
+    // System.out.println(p + " Final\n" + board);
 
     for (int r = 0; r < board.getSize(); r++) {
       for (int c = 0; c < board.getSize(); c++) {
@@ -144,7 +145,7 @@ public class BoxGame {
     int bestScore = Integer.MIN_VALUE;
     for (Board update : possibleMoves(board, p)) {
       // System.out.println("Update\n" + update);
-      int curScore = minimax(update, mover - 1, p, Integer.MAX_VALUE);
+      int curScore = evaluate(update, mover);
       if (curScore > bestScore) {
         bestBoard = update;
         bestScore = curScore;

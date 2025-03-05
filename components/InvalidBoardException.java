@@ -1,3 +1,4 @@
+package components;
 public class InvalidBoardException extends Exception {
   public InvalidBoardException() {
     super();

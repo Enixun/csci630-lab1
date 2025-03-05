@@ -1,3 +1,4 @@
+package components;
 // import java.util.Arrays;
 
 public class Piece {
