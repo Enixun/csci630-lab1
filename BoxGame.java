@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.HashSet;
@@ -44,25 +45,36 @@ public class BoxGame {
     return minimax(board, mover - 1, players[mover - 1], Integer.MAX_VALUE);
   }
 
+  private ArrayList<Board> possibleMoves(Board b, Player player) {
+    ArrayList<Board> moves = new ArrayList<>();
+    for (BoardPosition bp : b.available()) {
+      for (Piece p : player.getPieces()) {
+        Board copy = b.copy();
+        BoardPosition[] coords = p.coordinates(bp);
+        try {
+          copy.updateBoard(player.getId(), coords);
+          moves.add(copy);
+        } catch (InvalidBoardException ibe) {
+          // System.out.println(ibe.getMessage() + " Skipping...");
+        }
+      }
+    }
+    return moves;
+  }
+
   private int minimax(Board board, int turnIndex, Player max, int depth) {
     Player p = players[turnIndex];
     boolean isMax = p.equals(max);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
     boolean terminal = true;
     if (depth > 0) {
-      for (BoardPosition bp : board.available()) {
-        for (Piece piece : p.getPieces()) {
-          Board update = board.copy();
-          try {
-            update.updateBoard(p.getId(), piece.coordinates(bp));
-            int curVal = minimax(update, (turnIndex + 1) % players.length, max, depth - 1);
-            // System.out.println("Best so far: " + val + ", current: " + curVal);
-            if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
-            terminal = false;
-          } catch (InvalidBoardException ibe) {
-            // System.err.println("Cannot place piece at " + bp + ", " + ibe.getMessage());
-          }
-        }
+      for (Board update : possibleMoves(board, p)) {
+        // System.out.println(update);
+          terminal = false;
+          int curVal = minimax(update, (turnIndex + 1) % players.length, max, depth - 1);
+          // System.out.println("Best so far: " + val + ", current: " + curVal);
+          if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
+          terminal = false;
       }
     }
     return terminal ? finalScore(board, p) : val;
@@ -87,7 +99,7 @@ public class BoxGame {
           int count = 0;
 
           while (!q.isEmpty()) {
-            System.out.println(q);
+            // System.out.println(q);
             BoardPosition sp = q.remove();
             if (visited.contains(sp) || board.lookup(sp) != val) continue;
             visited.add(sp);
