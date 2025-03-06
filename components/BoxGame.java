@@ -42,8 +42,8 @@ public class BoxGame {
     return board;
   }
 
-  public int evaluate(Board board, int mover) {
-    return (int) minimax(board, mover - 1, players[mover - 1], Integer.MAX_VALUE);
+  public double evaluate(Board board, int mover) {
+    return minimax(board, mover - 1, players[mover - 1], Integer.MAX_VALUE);
   }
 
   private ArrayList<Board> possibleMoves(Board b, Player player) {
@@ -140,8 +140,8 @@ public class BoxGame {
 
           // System.out.println(val + " " + count);
           // Only able to do this because of consistent areas, need better way to track
-          if (val == p.getId()) playerScore += (count / 6) - 1;
-          else opponentScore += (count / 6) - 1;
+          if (val == p.getId()) playerScore += (count / 3) - 1;
+          else opponentScore += (count / 3) - 1;
         }
         visited.add(bp);
       }
@@ -149,6 +149,7 @@ public class BoxGame {
 
     // System.out.println(playerScore + ", " + opponentScore);
     return 1.001 * playerScore - opponentScore;
+    // return playerScore - opponentScore;
   }
 
   public Board move(Board board, int mover) throws InvalidBoardException {
@@ -201,5 +202,36 @@ public class BoxGame {
     System.out.println("TURN 2");
     bg.board = bg.move(bg.board, 2);
     System.out.println(bg.board);
+
+    BoxGame bg2 = new BoxGame(2, new Board(
+      7,
+      new BoardPosition(1, 1), 
+      new BoardPosition(4, 0)
+    ));
+    // System.out.println(bg);
+
+    System.out.println("TURN 1");
+    bg2.board = bg2.move(bg2.board, 1);
+    System.out.println(bg2.board);
+
+    System.out.println("TURN 2");
+    bg2.board = bg2.move(bg2.board, 2);
+    System.out.println(bg2.board);
+
+    System.out.println("TURN 1");
+    bg2.board = bg2.move(bg2.board, 1);
+    System.out.println(bg2.board);
+
+    System.out.println("TURN 2");
+    bg2.board = bg2.move(bg2.board, 2);
+    System.out.println(bg2.board);
+
+    System.out.println("TURN 1");
+    bg2.board = bg2.move(bg2.board, 1);
+    System.out.println(bg2.board);
+
+    System.out.println("TURN 2");
+    bg2.board = bg2.move(bg2.board, 2);
+    System.out.println(bg2.board);
   }
 }
