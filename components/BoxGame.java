@@ -43,10 +43,11 @@ public class BoxGame {
   }
 
   public int evaluate(Board board, int mover) {
-    return minimax(board, mover - 1, players[mover - 1], Integer.MAX_VALUE);
+    return (int) minimax(board, mover - 1, players[mover - 1], Integer.MAX_VALUE);
   }
 
   private ArrayList<Board> possibleMoves(Board b, Player player) {
+    // System.out.println("Possible moves for " + player.getId());
     ArrayList<Board> moves = new ArrayList<>();
     for (BoardPosition bp : b.available()) {
       for (Piece p : player.getPieces()) {
@@ -60,36 +61,42 @@ public class BoxGame {
         }
       }
     }
+    // System.out.println(player);
+    // System.out.println(moves);
     return moves;
   }
 
-  private int minimax(Board board, int turnIndex, Player max, int depth) {
-    Player p = players[turnIndex];
-    boolean isMax = p.equals(max);
-    System.out.println(p + " = " + max + " = " + isMax);
-    int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    boolean terminal = true;
+  private double minimax(Board board, int turnIndex, Player max, int depth) {
+    int nextIndex = (turnIndex + 1) % players.length;
+    Player nextPlayer = players[nextIndex];
+    boolean isMax = nextPlayer.equals(max);
+    // System.out.println(p + " = " + max + " = " + isMax);
+    double val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
     if (depth > 0) {
-      for (Board update : possibleMoves(board, p)) {
-        System.out.println(update);
-          terminal = false;
-          int curVal = minimax(update, (turnIndex + 1) % players.length, max, depth - 1);
-          // System.out.println("Best so far: " + val + ", current: " + curVal);
+      ArrayList<Board> moves = possibleMoves(board, nextPlayer);
+      if (moves.size() == 0) {
+        double score = finalScore(board, max);
+        // System.out.println("Terminal board for " + max + " score: " + score);
+        // System.out.println(board);
+        return score;
+      }
+      for (Board update : moves) {
+        // System.out.println("possible\n" + update);
+          double curVal = minimax(update, nextIndex, max, depth - 1);
+          // System.out.println("Best so far: " + val + ", current: " + curVal + ", " + (isMax ? "maximizing" : "minimizing"));
           if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
-          terminal = false;
       }
     }
-    // System.out.println(p);
-    if (terminal) val = finalScore(board, p);
-    System.out.println("minimax: " + p + " max: " + max + " best val: " + val);
-    return terminal ? finalScore(board, p) : val;
+    // if (terminal) val = finalScore(board, p);
+    // System.out.println("minimax: " + p + " max: " + max + " best val: " + val);
+    return val;
   }
 
-  private int finalScore(Board board, Player p) {
+  private double finalScore(Board board, Player p) {
     int playerScore = 0;
     int opponentScore = 0;
     HashSet<BoardPosition> visited = new HashSet<>();
-    // System.out.println(p + " Final\n" + board);
+    // System.out.println(p);
 
     for (int r = 0; r < board.getSize(); r++) {
       for (int c = 0; c < board.getSize(); c++) {
@@ -132,6 +139,7 @@ public class BoxGame {
           }
 
           // System.out.println(val + " " + count);
+          // Only able to do this because of consistent areas, need better way to track
           if (val == p.getId()) playerScore += (count / 6) - 1;
           else opponentScore += (count / 6) - 1;
         }
@@ -140,18 +148,19 @@ public class BoxGame {
     }
 
     // System.out.println(playerScore + ", " + opponentScore);
-    return playerScore - opponentScore;
+    return 1.001 * playerScore - opponentScore;
   }
 
   public Board move(Board board, int mover) throws InvalidBoardException {
     int turnIndex = mover - 1;
     Player p = players[turnIndex];
-    System.out.println(p);
+    // System.out.println(p);
     Board bestBoard = null;
-    int bestScore = Integer.MIN_VALUE;
+    double bestScore = Integer.MIN_VALUE;
     for (Board update : possibleMoves(board, p)) {
       // System.out.println("Update\n" + update);
-      int curScore = evaluate(update, mover);
+      // int curScore = evaluate(update, mover);
+      double curScore = minimax(update, turnIndex, p, Integer.MAX_VALUE);
       if (curScore > bestScore) {
         bestBoard = update;
         bestScore = curScore;
@@ -175,23 +184,22 @@ public class BoxGame {
       new BoardPosition(5, 2), new BoardPosition(5, 4),
       new BoardPosition(2, 3)
     ));
-    System.out.println(bg);
-    // System.out.println(bg.evaluate(bg.getBoard(), 1));
+    // System.out.println(bg);
+
     System.out.println("TURN 1");
     bg.board = bg.move(bg.board, 1);
     System.out.println(bg.board);
-    // System.out.println(bg.evaluate(bg.getBoard(), 2));
+
     System.out.println("TURN 2");
     bg.board = bg.move(bg.board, 2);
     System.out.println(bg.board);
-    // System.out.println(bg.move(bg.board, 2));
+
     System.out.println("TURN 1");
     bg.board = bg.move(bg.board, 1);
     System.out.println(bg.board);
-    // System.out.println(bg.evaluate(bg.getBoard(), 2));
+
     System.out.println("TURN 2");
     bg.board = bg.move(bg.board, 2);
     System.out.println(bg.board);
-    // System.out.println(bg.move(bg.board, 2));
   }
 }
