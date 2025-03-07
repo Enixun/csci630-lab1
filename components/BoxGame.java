@@ -73,7 +73,7 @@ public class BoxGame {
     boolean isMax = nextPlayer.equals(max);
     // System.out.println(p + " = " + max + " = " + isMax);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    if (depth == 0) return score(board, nextPlayer);
+    if (depth == 0) return greedyPoints(board, max);
     ArrayList<Board> moves = possibleMoves(board, nextPlayer);
     if (moves.size() == 0) {
       int score = score(board, max);
@@ -97,7 +97,7 @@ public class BoxGame {
     Player nextPlayer = players[nextIndex];
     boolean isMax = nextPlayer.equals(max);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    if (depth == 0) return score(board, nextPlayer);
+    if (depth == 0) return greedyPoints(board, max);
       ArrayList<Board> moves = possibleMoves(board, nextPlayer);
       if (moves.size() == 0) {
         int score = score(board, max);
@@ -197,19 +197,18 @@ public class BoxGame {
     return playerScore - opponentScore;
   }
   
-  public int eval1(Board b, Player p) {
+  public int greedyPoints(Board board, Player p) {
     // maximize points earned
     int playerScore = 0;
-    int opponentScore = 0;
     HashSet<BoardPosition> visited = new HashSet<>();
-    // System.out.println(p);
 
+    // largely duplicated, would use a callback in JS or Python but not familiar with Java strategy
     for (int r = 0; r < board.getSize(); r++) {
       for (int c = 0; c < board.getSize(); c++) {
         BoardPosition bp = new BoardPosition(r, c);
         if (visited.contains(bp)) continue;
         char val = board.lookup(bp);
-        if (val != Board.AVAILABLE && val != Board.OBSTACLE) {
+        if (val == p.getId()) {
           Queue<BoardPosition> q = new LinkedList<>();
           HashSet<BoardPosition> inQ = new HashSet<>();
           q.add(bp);
@@ -217,7 +216,6 @@ public class BoxGame {
           int count = 0;
 
           while (!q.isEmpty()) {
-            // System.out.println(q);
             BoardPosition sp = q.remove();
             if (visited.contains(sp) || board.lookup(sp) != val) continue;
             visited.add(sp);
@@ -244,19 +242,13 @@ public class BoxGame {
             }
           }
 
-          // System.out.println(val + " " + count);
           // Only able to do this because of consistent areas, need better way to track
-          if (val == p.getId()) playerScore += (count / 6) - 1;
-          else opponentScore += (count / 6) - 1;
+          playerScore += (count / 6) - 1;
         }
         visited.add(bp);
       }
     }
-
-    // System.out.println(playerScore + ", " + opponentScore);
-    // return 1.001 * playerScore - opponentScore;
-    // return playerScore - 1.001 * opponentScore;
-    return playerScore - opponentScore;
+    return playerScore;
   }
 
   public Board play(Board board, String alg1, int depth1, int ev1, String alg2, int depth2, int ev2) throws Exception {
@@ -269,8 +261,6 @@ public class BoxGame {
 
     Board state = board;
     int mover = DEFAULT_FIRST_TURN + 1;
-
-    System.out.println(this);
     
     while (true) {
       try {
@@ -307,7 +297,7 @@ public class BoxGame {
     ));
     System.out.println(bg2);
 
-    System.out.println(bg1.play(bg1.getBoard(), "MM", 3, 1, "AB", 5, 1));
-    System.out.println(bg2.play(bg2.getBoard(), "MM", 5, 1, "AB", 1, 1));
+    System.out.println(bg1.play(bg1.getBoard(), "MM", 0, 1, "AB", 5, 1));
+    System.out.println(bg2.play(bg2.getBoard(), "MM", 4, 1, "AB", 2, 1));
   }
 }
