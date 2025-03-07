@@ -7,6 +7,7 @@ public class Player {
   private static final int DEFAULT_DEPTH = Integer.MAX_VALUE;
   private char id;
   private Strategy strategy;
+  private int strategyCalls;
   private int depth;
   private Set<Piece> pieces;
   
@@ -17,6 +18,7 @@ public class Player {
   public Player(char id, Strategy strategy, int depth) {
     this.id = id;
     this.strategy = strategy;
+    this.strategyCalls = 0;
     this.depth = depth;
     this.pieces = new HashSet<>();
     pieces.add(DEFAULT_PIECE);
@@ -33,6 +35,14 @@ public class Player {
 
   public void setStrategy(Strategy s) {
     this.strategy = s;
+  }
+
+  public int getStrategyCalls() {
+    return this.strategyCalls;
+  }
+
+  public void setStrategyCalls(int num) {
+    this.strategyCalls = num;
   }
 
   public int getDepth() {
@@ -52,6 +62,7 @@ public class Player {
     return "Player(" +
     "id:" + id + "," +
     "strategy:" + strategy + "," +
+    "calls:" + strategyCalls + "," +
     "depth:" + depth + "," +
     "pieces:" + pieces.toString() +
     ")";
