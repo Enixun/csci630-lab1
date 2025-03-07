@@ -74,7 +74,7 @@ public class BoxGame {
     boolean isMax = nextPlayer.equals(max);
     // System.out.println(p + " = " + max + " = " + isMax);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    if (depth == 0) return greedyPoints(board, max);
+    if (depth == 0) return max.getEval() == 1 ? minimizeOpponentPieces(board, max) : greedyPoints(board, max);
     ArrayList<Board> moves = possibleMoves(board, nextPlayer);
     if (moves.size() == 0) {
       int score = score(board, max);
@@ -84,9 +84,9 @@ public class BoxGame {
     }
     for (Board update : moves) {
       // System.out.println("possible\n" + update);
-        int curVal = minimax(update, nextIndex, max, depth - 1);
-        // System.out.println("Best so far: " + val + ", current: " + curVal + ", " + (isMax ? "maximizing" : "minimizing"));
-        if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
+      int curVal = minimax(update, nextIndex, max, depth - 1);
+      // System.out.println("Best so far: " + val + ", current: " + curVal + ", " + (isMax ? "maximizing" : "minimizing"));
+      if ((isMax && curVal > val) || (!isMax && curVal < val)) val = curVal;
     }
     // if (terminal) val = finalScore(board, p);
     // System.out.println("minimax: " + p + " max: " + max + " best val: " + val);
@@ -99,19 +99,19 @@ public class BoxGame {
     Player nextPlayer = players[nextIndex];
     boolean isMax = nextPlayer.equals(max);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    if (depth == 0) return greedyPoints(board, max);
-      ArrayList<Board> moves = possibleMoves(board, nextPlayer);
-      if (moves.size() == 0) {
-        int score = score(board, max);
-        return score;
-      }
-      for (Board update : moves) {
-        int curVal = alphabeta(update, nextIndex, max, depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        if ((isMax && curVal > val) || (!isMax && curVal < val)) {
-          val = curVal;
-          if ((isMax && val > beta) || (!isMax && curVal < alpha)) break;
-          if (isMax && val > alpha) alpha = val;
-          else if (!isMax && val < beta) beta = val;
+    if (depth == 0) return max.getEval() == 1 ? minimizeOpponentPieces(board, max) : greedyPoints(board, max);
+    ArrayList<Board> moves = possibleMoves(board, nextPlayer);
+    if (moves.size() == 0) {
+      int score = score(board, max);
+      return score;
+    }
+    for (Board update : moves) {
+      int curVal = alphabeta(update, nextIndex, max, depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+      if ((isMax && curVal > val) || (!isMax && curVal < val)) {
+        val = curVal;
+        if ((isMax && val > beta) || (!isMax && curVal < alpha)) break;
+        if (isMax && val > alpha) alpha = val;
+        else if (!isMax && val < beta) beta = val;
       }
     }
     return val;
@@ -256,15 +256,31 @@ public class BoxGame {
     return playerScore;
   }
 
+  public int minimizeOpponentPieces(Board board, Player p) {
+    int opponentSpaces = 0;
+    // largely duplicated, would use a callback in JS or Python but not familiar with Java strategy
+    for (int r = 0; r < board.getSize(); r++) {
+      for (int c = 0; c < board.getSize(); c++) {
+        BoardPosition bp = new BoardPosition(r, c);
+        char val = board.lookup(bp);
+
+        if (val != p.getId() && val != Board.AVAILABLE && val != Board.OBSTACLE) opponentSpaces++;
+      }
+    }
+    return board.getSize() * board.getSize() - opponentSpaces;
+  }
+
   public Board play(Board board, String alg1, int depth1, int ev1, String alg2, int depth2, int ev2) throws Exception {
     if (!alg1.equals("MM") && !alg1.equals("AB")) throw new Exception("Error with alg1: Invalid algorithm");
     players[0].setStrategy(alg1.equals("MM") ? Strategy.MM : Strategy.AB);
     players[0].setStrategyCalls(0);
     players[0].setDepth(depth1);
+    players[0].setEval(ev1);
     if (!alg2.equals("MM") && !alg2.equals("AB")) throw new Exception("Error with alg2: Invalid algorithm");
     players[1].setStrategy(alg2.equals("MM") ? Strategy.MM : Strategy.AB);
-    players[1].setDepth(depth2);
     players[1].setStrategyCalls(0);
+    players[1].setDepth(depth2);
+    players[1].setEval(ev2);
 
     Board state = board;
     int mover = DEFAULT_FIRST_TURN + 1;
@@ -306,9 +322,9 @@ public class BoxGame {
 
     System.out.println(bg1.play(bg1.getBoard(), "MM", Integer.MAX_VALUE, 1, "AB", Integer.MAX_VALUE, 1));
     System.out.println(bg1);
-    System.out.println(bg2.play(bg2.getBoard(), "MM", 3, 1, "MM", 3, 1));
+    System.out.println(bg2.play(bg2.getBoard(), "MM", 3, 1, "MM", 3, 2));
     System.out.println(bg2);
-    System.out.println(bg2.play(bg2.getBoard(), "AB", 3, 1, "AB", 3, 1));
+    System.out.println(bg2.play(bg2.getBoard(), "AB", 3, 1, "AB", 3, 2));
     System.out.println(bg2);
   }
 }

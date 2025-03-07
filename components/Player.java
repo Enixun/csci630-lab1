@@ -5,9 +5,11 @@ import java.util.Set;
 public class Player {
   private static final Piece DEFAULT_PIECE = new Piece(2, 3);
   private static final int DEFAULT_DEPTH = Integer.MAX_VALUE;
+  private static final int DEFAULT_EVAL = 1;
   private char id;
   private Strategy strategy;
   private int strategyCalls;
+  private int evalFunction;
   private int depth;
   private Set<Piece> pieces;
   
@@ -19,6 +21,7 @@ public class Player {
     this.id = id;
     this.strategy = strategy;
     this.strategyCalls = 0;
+    this.evalFunction = DEFAULT_EVAL;
     this.depth = depth;
     this.pieces = new HashSet<>();
     pieces.add(DEFAULT_PIECE);
@@ -43,6 +46,14 @@ public class Player {
 
   public void setStrategyCalls(int num) {
     this.strategyCalls = num;
+  }
+
+  public int getEval() {
+    return this.evalFunction;
+  }
+
+  public void setEval(int eval) {
+    this.evalFunction = eval;
   }
 
   public int getDepth() {
