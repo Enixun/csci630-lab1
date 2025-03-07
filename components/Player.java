@@ -4,13 +4,20 @@ import java.util.Set;
 
 public class Player {
   private static final Piece DEFAULT_PIECE = new Piece(2, 3);
+  private static final int DEFAULT_DEPTH = Integer.MAX_VALUE;
   private char id;
   private Strategy strategy;
+  private int depth;
   private Set<Piece> pieces;
   
   public Player(char id, Strategy strategy) {
+    this(id, strategy, DEFAULT_DEPTH);
+  }
+  
+  public Player(char id, Strategy strategy, int depth) {
     this.id = id;
     this.strategy = strategy;
+    this.depth = depth;
     this.pieces = new HashSet<>();
     pieces.add(DEFAULT_PIECE);
     pieces.add(DEFAULT_PIECE.flip());
@@ -28,6 +35,14 @@ public class Player {
     this.strategy = s;
   }
 
+  public int getDepth() {
+    return depth;
+  }
+
+  public void setDepth(int depth) {
+    this.depth = depth;
+  }
+
   public Set<Piece> getPieces() {
     return pieces;
   }
@@ -37,6 +52,7 @@ public class Player {
     return "Player(" +
     "id:" + id + "," +
     "strategy:" + strategy + "," +
+    "depth:" + depth + "," +
     "pieces:" + pieces.toString() +
     ")";
   }

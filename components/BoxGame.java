@@ -126,7 +126,7 @@ public class BoxGame {
       // System.out.println("Update\n" + update);
       // int curScore = evaluate(update, mover);
       // double curScore = minimax(update, turnIndex, p, Integer.MAX_VALUE);
-      int curScore = s == Strategy.MM ? minimax(update, turnIndex, p, Integer.MAX_VALUE) : alphabeta(update, turnIndex, p, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+      int curScore = s == Strategy.MM ? minimax(update, turnIndex, p, p.getDepth()) : alphabeta(update, turnIndex, p, p.getDepth(), Integer.MIN_VALUE, Integer.MAX_VALUE);
       if (curScore > bestScore) {
         bestBoard = update;
         bestScore = curScore;
@@ -262,8 +262,10 @@ public class BoxGame {
   public Board play(Board board, String alg1, int depth1, int ev1, String alg2, int depth2, int ev2) throws Exception {
     if (!alg1.equals("MM") && !alg1.equals("AB")) throw new Exception("Error with alg1: Invalid algorithm");
     players[0].setStrategy(alg1.equals("MM") ? Strategy.MM : Strategy.AB);
+    players[0].setDepth(depth1);
     if (!alg2.equals("MM") && !alg2.equals("AB")) throw new Exception("Error with alg2: Invalid algorithm");
     players[1].setStrategy(alg2.equals("MM") ? Strategy.MM : Strategy.AB);
+    players[1].setDepth(depth2);
 
     Board state = board;
     int mover = DEFAULT_FIRST_TURN + 1;
@@ -306,6 +308,6 @@ public class BoxGame {
     System.out.println(bg2);
 
     System.out.println(bg1.play(bg1.getBoard(), "MM", 3, 1, "AB", 5, 1));
-    System.out.println(bg2.play(bg2.getBoard(), "MM", 3, 1, "AB", 5, 1));
+    System.out.println(bg2.play(bg2.getBoard(), "MM", 5, 1, "AB", 1, 1));
   }
 }
