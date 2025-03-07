@@ -92,7 +92,7 @@ public class BoxGame {
     return val;
   }
 
-  private double finalScore(Board board, Player p) {
+  private int finalScore(Board board, Player p) {
     int playerScore = 0;
     int opponentScore = 0;
     HashSet<BoardPosition> visited = new HashSet<>();
@@ -140,16 +140,17 @@ public class BoxGame {
 
           // System.out.println(val + " " + count);
           // Only able to do this because of consistent areas, need better way to track
-          if (val == p.getId()) playerScore += (count / 3) - 1;
-          else opponentScore += (count / 3) - 1;
+          if (val == p.getId()) playerScore += (count / 6) - 1;
+          else opponentScore += (count / 6) - 1;
         }
         visited.add(bp);
       }
     }
 
     // System.out.println(playerScore + ", " + opponentScore);
-    return 1.001 * playerScore - opponentScore;
-    // return playerScore - opponentScore;
+    // return 1.001 * playerScore - opponentScore;
+    // return playerScore - 1.001 * opponentScore;
+    return playerScore - opponentScore;
   }
 
   public Board move(Board board, int mover) throws InvalidBoardException {
@@ -165,6 +166,7 @@ public class BoxGame {
       if (curScore > bestScore) {
         bestBoard = update;
         bestScore = curScore;
+        System.out.println(bestScore);
       }
     }
     if (bestBoard == null) throw new InvalidBoardException("No possible moves");
