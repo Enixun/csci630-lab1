@@ -20,6 +20,10 @@ public class Player {
     return id;
   }
 
+  public Strategy getStrategy() {
+    return this.strategy;
+  }
+
   public void setStrategy(Strategy s) {
     this.strategy = s;
   }

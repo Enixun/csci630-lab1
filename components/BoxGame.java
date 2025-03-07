@@ -120,11 +120,13 @@ public class BoxGame {
     Player p = players[turnIndex];
     // System.out.println(p);
     Board bestBoard = null;
-    double bestScore = Integer.MIN_VALUE;
+    int bestScore = Integer.MIN_VALUE;
+    Strategy s = p.getStrategy();
     for (Board update : possibleMoves(board, p)) {
       // System.out.println("Update\n" + update);
-      int curScore = evaluate(update, mover);
+      // int curScore = evaluate(update, mover);
       // double curScore = minimax(update, turnIndex, p, Integer.MAX_VALUE);
+      int curScore = s == Strategy.MM ? minimax(update, turnIndex, p, Integer.MAX_VALUE) : alphabeta(update, turnIndex, p, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
       if (curScore > bestScore) {
         bestBoard = update;
         bestScore = curScore;
@@ -195,7 +197,7 @@ public class BoxGame {
     return playerScore - opponentScore;
   }
   
-  public double eval1(Board b, Player p) {
+  public int eval1(Board b, Player p) {
     // maximize points earned
     int playerScore = 0;
     int opponentScore = 0;
@@ -257,6 +259,29 @@ public class BoxGame {
     return playerScore - opponentScore;
   }
 
+  public Board play(Board board, String alg1, int depth1, int ev1, String alg2, int depth2, int ev2) throws Exception {
+    if (!alg1.equals("MM") && !alg1.equals("AB")) throw new Exception("Error with alg1: Invalid algorithm");
+    players[0].setStrategy(alg1.equals("MM") ? Strategy.MM : Strategy.AB);
+    if (!alg2.equals("MM") && !alg2.equals("AB")) throw new Exception("Error with alg2: Invalid algorithm");
+    players[1].setStrategy(alg2.equals("MM") ? Strategy.MM : Strategy.AB);
+
+    Board state = board;
+    int mover = DEFAULT_FIRST_TURN + 1;
+
+    System.out.println(this);
+    
+    while (true) {
+      try {
+        state = move(state, mover);
+      } catch (InvalidBoardException ibe) {
+        break;
+      }
+      mover = mover % 2 + 1;
+    }
+    
+    return state;
+  }
+
   @Override
   public String toString() {
     return "BoxGame{" +
@@ -266,58 +291,21 @@ public class BoxGame {
     "}";
   }
 
-  public static void main(String[] args) throws InvalidBoardException {
-    BoxGame bg = new BoxGame(2, new Board(
+  public static void main(String[] args) throws Exception {
+    BoxGame bg1 = new BoxGame(2, new Board(
       new BoardPosition(5, 2), new BoardPosition(5, 4),
       new BoardPosition(2, 3)
     ));
-    // System.out.println(bg);
-
-    System.out.println("TURN 1");
-    bg.board = bg.move(bg.board, 1);
-    System.out.println(bg.board);
-
-    System.out.println("TURN 2");
-    bg.board = bg.move(bg.board, 2);
-    System.out.println(bg.board);
-
-    System.out.println("TURN 1");
-    bg.board = bg.move(bg.board, 1);
-    System.out.println(bg.board);
-
-    System.out.println("TURN 2");
-    bg.board = bg.move(bg.board, 2);
-    System.out.println(bg.board);
+    System.out.println(bg1);
 
     BoxGame bg2 = new BoxGame(2, new Board(
       7,
       new BoardPosition(1, 1), 
       new BoardPosition(4, 0)
     ));
-    // System.out.println(bg);
+    System.out.println(bg2);
 
-    System.out.println("TURN 1");
-    bg2.board = bg2.move(bg2.board, 1);
-    System.out.println(bg2.board);
-
-    System.out.println("TURN 2");
-    bg2.board = bg2.move(bg2.board, 2);
-    System.out.println(bg2.board);
-
-    System.out.println("TURN 1");
-    bg2.board = bg2.move(bg2.board, 1);
-    System.out.println(bg2.board);
-
-    System.out.println("TURN 2");
-    bg2.board = bg2.move(bg2.board, 2);
-    System.out.println(bg2.board);
-
-    System.out.println("TURN 1");
-    bg2.board = bg2.move(bg2.board, 1);
-    System.out.println(bg2.board);
-
-    System.out.println("TURN 2");
-    bg2.board = bg2.move(bg2.board, 2);
-    System.out.println(bg2.board);
+    System.out.println(bg1.play(bg1.getBoard(), "MM", 3, 1, "AB", 5, 1));
+    System.out.println(bg2.play(bg2.getBoard(), "MM", 3, 1, "AB", 5, 1));
   }
 }
