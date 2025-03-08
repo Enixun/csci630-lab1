@@ -75,7 +75,7 @@ public class BoxGame {
     boolean isMax = nextPlayer.equals(max);
     // System.out.println(p + " = " + max + " = " + isMax);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    if (depth == 0) return max.getEval() == 1 ? minimizeOpponentPieces(board, max) : greedyPoints(board, max);
+    if (depth == 0) return max.getEval() == 1 ?  greedyPoints(board, max) : blockMost(board, max);
     ArrayList<Board> moves = possibleMoves(board, nextPlayer);
     if (moves.size() == 0) {
       int score = score(board, max);
@@ -100,14 +100,14 @@ public class BoxGame {
     Player nextPlayer = players[nextIndex];
     boolean isMax = nextPlayer.equals(max);
     int val = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-    if (depth == 0) return max.getEval() == 1 ? minimizeOpponentPieces(board, max) : greedyPoints(board, max);
+    if (depth == 0) return max.getEval() == 1 ? greedyPoints(board, max) : blockMost(board, max);
     ArrayList<Board> moves = possibleMoves(board, nextPlayer);
     if (moves.size() == 0) {
       int score = score(board, max);
       return score;
     }
     for (Board update : moves) {
-      int curVal = alphabeta(update, nextIndex, max, depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+      int curVal = alphabeta(update, nextIndex, max, depth - 1, alpha, beta);
       if ((isMax && curVal > val) || (!isMax && curVal < val)) {
         val = curVal;
         if ((isMax && val > beta) || (!isMax && curVal < alpha)) break;
@@ -257,18 +257,39 @@ public class BoxGame {
     return playerScore;
   }
 
-  public int minimizeOpponentPieces(Board board, Player p) {
-    int opponentSpaces = 0;
+  public int blockMost(Board board, Player p) {
+    // border most possible opponent edges
+    int options = 0;
+    HashSet<BoardPosition> visited = new HashSet<>();
+
     // largely duplicated, would use a callback in JS or Python but not familiar with Java strategy
     for (int r = 0; r < board.getSize(); r++) {
       for (int c = 0; c < board.getSize(); c++) {
         BoardPosition bp = new BoardPosition(r, c);
+        if (visited.contains(bp)) continue;
         char val = board.lookup(bp);
-
-        if (val != p.getId() && val != Board.AVAILABLE && val != Board.OBSTACLE) opponentSpaces++;
+        if (val == p.getId()) {
+          BoardPosition up = bp.add(-1, 0);
+          BoardPosition down = bp.add(1, 0);
+          BoardPosition left = bp.add(0, -1);
+          BoardPosition right = bp.add(0, 1);
+          if (bp.row() > 0 && board.lookup(up) != p.getId() && board.lookup(up) != Board.AVAILABLE && board.lookup(up) != Board.OBSTACLE) {
+            options++;
+          }
+          if (bp.row() < board.getSize() - 1 && board.lookup(down) != p.getId() && board.lookup(down) != Board.AVAILABLE && board.lookup(down) != Board.OBSTACLE) {
+            options++;
+          }
+          if (bp.col() > 0 && board.lookup(left) != p.getId() && board.lookup(left) != Board.AVAILABLE && board.lookup(left) != Board.OBSTACLE) {
+            options++;
+          }
+          if (bp.col() < board.getSize() - 1 && board.lookup(right) != p.getId() && board.lookup(right) != Board.AVAILABLE && board.lookup(right) != Board.OBSTACLE) {
+            options++;
+          }
+        }
+        visited.add(bp);
       }
     }
-    return board.getSize() * board.getSize() - opponentSpaces;
+    return options;
   }
 
   public Board play(Board board, String alg1, int depth1, int ev1, String alg2, int depth2, int ev2) throws Exception {
@@ -302,6 +323,7 @@ public class BoxGame {
     int wins = 0;
     int totalScore = 0;
     Random rng = new Random();
+    long startTime = System.currentTimeMillis();
 
     for (int i = 0; i < runs; i++) {
       BoardPosition[] obstacles = new BoardPosition[obs];
@@ -325,8 +347,12 @@ public class BoxGame {
       int score = score(end, players[0]);
       if (score > 0) wins++;
       totalScore += score;
+      // System.out.println(end);
+      this.board = end;
+      System.out.println(this);
     }
 
+    System.out.print("Ran in " + (System.currentTimeMillis() - startTime) + "ms ");
     double[] tuple = { wins, ((double) totalScore / runs) };
     return tuple;
   }
