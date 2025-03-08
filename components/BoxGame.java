@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.HashSet;
 import java.util.Queue;
+import java.util.Random;
 
 public class BoxGame {
   private static final int DEFAULT_PLAYER_COUNT = 2;
@@ -297,6 +298,39 @@ public class BoxGame {
     return state;
   }
 
+  public double[] expect(int bsize, int obs, int runs, String alg1, int depth1, int ev1, String alg2, int depth2, int ev2) {
+    int wins = 0;
+    int totalScore = 0;
+    Random rng = new Random();
+
+    for (int i = 0; i < runs; i++) {
+      BoardPosition[] obstacles = new BoardPosition[obs];
+      int oi = 0;
+      HashSet<BoardPosition> uniqueObstacles = new HashSet<>();
+      while (oi < obs) {
+        BoardPosition bp = new BoardPosition(rng.nextInt(bsize), rng.nextInt(bsize));
+        if (!uniqueObstacles.contains(bp)) obstacles[oi++] = bp;
+        uniqueObstacles.add(bp);
+      }
+      Board end = null;
+      try {
+        Board start = new Board(bsize, obstacles);
+        end = play(start, alg1, depth1, ev1, alg2, depth2, ev2);
+      } catch (Exception e) {
+        i--;
+        continue;
+      }
+
+      // System.out.println(end);
+      int score = score(end, players[0]);
+      if (score > 0) wins++;
+      totalScore += score;
+    }
+
+    double[] tuple = { wins, ((double) totalScore / runs) };
+    return tuple;
+  }
+
   @Override
   public String toString() {
     return "BoxGame{" +
@@ -326,5 +360,24 @@ public class BoxGame {
     System.out.println(bg2);
     System.out.println(bg2.play(bg2.getBoard(), "AB", 3, 1, "AB", 3, 2));
     System.out.println(bg2);
+
+    System.out.println(Arrays.toString(
+      bg1.expect(6, 2, 25, "MM", Integer.MAX_VALUE, 1, "MM", Integer.MAX_VALUE, 1)
+    ));
+    System.out.println(Arrays.toString(
+      bg1.expect(6, 2, 25, "MM", 3, 1, "MM", Integer.MAX_VALUE, 1)
+    ));
+    System.out.println(Arrays.toString(
+      bg1.expect(6, 2, 25, "MM", 3, 2, "MM", Integer.MAX_VALUE, 1)
+    ));
+    System.out.println(Arrays.toString(
+      bg1.expect(8, 5, 25, "MM", 3, 1, "MM", 3, 2)
+    ));
+    System.out.println(Arrays.toString(
+      bg1.expect(6, 2, 25, "AB", Integer.MAX_VALUE, 1, "AB", Integer.MAX_VALUE, 2)
+    ));
+    System.out.println(Arrays.toString(
+      bg1.expect(8, 5, 25, "AB", 5, 1, "AB", 5, 2)
+    ));
   }
 }
