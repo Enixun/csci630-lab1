@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Board {
   private static final int DEFAULT_BOARD_SIZE = 6;
-  public static final char AVAILABLE = '.';
-  public static final char OBSTACLE = '*';
+  public static final String AVAILABLE = ".";
+  public static final String OBSTACLE = "*";
 
   private int size;
-  private char[][] board;
+  private String[][] board;
   
   public Board() {
     this(Board.DEFAULT_BOARD_SIZE);
@@ -16,7 +16,7 @@ public class Board {
 
   public Board(int size) {
     this.size = size;
-    this.board = new char[size][size];
+    this.board = new String[size][size];
     this.init();
   }
 
@@ -35,7 +35,7 @@ public class Board {
     return size;
   }
 
-  public char lookup(BoardPosition p) {
+  public String lookup(BoardPosition p) {
     return board[p.row()][p.col()];
   }
 
@@ -51,7 +51,7 @@ public class Board {
     updateBoard(OBSTACLE, positions);
   }
 
-  public void updateBoard(char symbol, BoardPosition... positions) throws InvalidBoardException {
+  public void updateBoard(String symbol, BoardPosition... positions) throws InvalidBoardException {
     for (BoardPosition bp : positions) {
       int row = bp.row();
       int col = bp.col();
@@ -77,13 +77,13 @@ public class Board {
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    for (char[] row : board) {
-      sb.append('|');
-      for (char col : row) {
+    for (String[] row : board) {
+      sb.append("|");
+      for (String col : row) {
         sb.append(col);
-        sb.append('|');
+        sb.append("|");
       }
-      sb.append('\n');
+      sb.append("\n");
     }
 
     return sb.toString();

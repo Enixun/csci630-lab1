@@ -33,7 +33,7 @@ public class BoxGame {
   public BoxGame(int numPlayers, Board board) {
     players = new Player[numPlayers];
     for (int i = 0; i < numPlayers; i++) {
-      players[i] = new Player(Character.forDigit(i + 1, 10), Strategy.MM);
+      players[i] = new Player(String.valueOf(i + 1), Strategy.MM);
     }
     this.board = board;
     this.turnIndex = DEFAULT_FIRST_TURN;
@@ -152,7 +152,7 @@ public class BoxGame {
       for (int c = 0; c < board.getSize(); c++) {
         BoardPosition bp = new BoardPosition(r, c);
         if (visited.contains(bp)) continue;
-        char val = board.lookup(bp);
+        String val = board.lookup(bp);
         if (val != Board.AVAILABLE && val != Board.OBSTACLE) {
           Queue<BoardPosition> q = new LinkedList<>();
           HashSet<BoardPosition> inQ = new HashSet<>();
@@ -213,7 +213,7 @@ public class BoxGame {
       for (int c = 0; c < board.getSize(); c++) {
         BoardPosition bp = new BoardPosition(r, c);
         if (visited.contains(bp)) continue;
-        char val = board.lookup(bp);
+        String val = board.lookup(bp);
         if (val == p.getId()) {
           Queue<BoardPosition> q = new LinkedList<>();
           HashSet<BoardPosition> inQ = new HashSet<>();
@@ -267,7 +267,7 @@ public class BoxGame {
       for (int c = 0; c < board.getSize(); c++) {
         BoardPosition bp = new BoardPosition(r, c);
         if (visited.contains(bp)) continue;
-        char val = board.lookup(bp);
+        String val = board.lookup(bp);
         if (val == p.getId()) {
           BoardPosition up = bp.add(-1, 0);
           BoardPosition down = bp.add(1, 0);

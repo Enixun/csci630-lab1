@@ -6,18 +6,18 @@ public class Player {
   private static final Piece DEFAULT_PIECE = new Piece(2, 3);
   private static final int DEFAULT_DEPTH = Integer.MAX_VALUE;
   private static final int DEFAULT_EVAL = 1;
-  private char id;
+  private String id;
   private Strategy strategy;
   private int strategyCalls;
   private int evalFunction;
   private int depth;
   private Set<Piece> pieces;
   
-  public Player(char id, Strategy strategy) {
+  public Player(String id, Strategy strategy) {
     this(id, strategy, DEFAULT_DEPTH);
   }
   
-  public Player(char id, Strategy strategy, int depth) {
+  public Player(String id, Strategy strategy, int depth) {
     this.id = id;
     this.strategy = strategy;
     this.strategyCalls = 0;
@@ -28,7 +28,7 @@ public class Player {
     pieces.add(DEFAULT_PIECE.flip());
   }
 
-  public char getId() {
+  public String getId() {
     return id;
   }
 
@@ -80,7 +80,7 @@ public class Player {
   }
 
   public static void main(String[] args) {
-    Player p1 = new Player('1', Strategy.MM);
+    Player p1 = new Player("1", Strategy.MM);
     System.out.println(p1);
   }
 }
